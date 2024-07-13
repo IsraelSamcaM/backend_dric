@@ -1,13 +1,13 @@
 import Sequelize from "sequelize";
 
 export const sequelize = new Sequelize(
-  "PROBLEMATICAS_DRIC", // Nombre de la base de datos
+  "railway", // Nombre de la base de datos
   "postgres", // Nombre de usuario
-  "13033162", // Contraseña
+  "zSgqSuNGyrgeUTbkOKRqXeOdNfdWVzcK", // Contraseña
   {
-    host: "localhost", // Host de la base de datos en Railway
+    host: "monorail.proxy.rlwy.net", // Host de la base de datos en Railway
     dialect: "postgres", // Dialecto PostgreSQL
-    port: 5432, // Puerto personalizado
+    port: 45482, // Puerto personalizado
     pool: {
       max: 5,
       min: 0,
