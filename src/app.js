@@ -13,7 +13,8 @@ app.use(cors(corsOptions));
 //Import routes
 
 import usuariosRoutes from "./routes/usuarios.routes.js";
-
+import municipiosRoutes from "./routes/municipios.routes.js";
+import carrerasRoutes from "./routes/carreras.routes.js";
 
 // Middlewares
 
@@ -26,6 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 //app.use(ambientesRoutes);
 
 app.use("/api/usuarios", usuariosRoutes );
+app.use("/api/municipios", municipiosRoutes );
+app.use("/api/carreras", carrerasRoutes );
 
 app.get("/", (req, res) => {
     res.json({ message: {
