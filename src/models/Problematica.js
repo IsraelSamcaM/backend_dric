@@ -50,10 +50,6 @@ export const Problematica = sequelize.define('problematicas', {
     zona: {
         type: DataTypes.STRING,
         allowNull: true
-    },
-    jurisdiccion: {
-        type: DataTypes.STRING,
-        allowNull: true
     }
 }, {
     timestamps: false,
