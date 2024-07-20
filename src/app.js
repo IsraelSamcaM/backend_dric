@@ -13,7 +13,7 @@ app.use(cors(corsOptions));
 //Import routes
 
 import usuariosRoutes from "./routes/usuarios.routes.js";
-import municipiosRoutes from "./routes/municipios.routes.js";
+import solicitantesRoutes from "./routes/solicitantes.routes.js";
 import carrerasRoutes from "./routes/carreras.routes.js";
 import problematicasRoutes from "./routes/problematicas.routes.js";
 
@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 //app.use(ambientesRoutes);
 
 app.use("/api/usuarios", usuariosRoutes );
-app.use("/api/municipios", municipiosRoutes );
+app.use("/api/solicitantes", solicitantesRoutes );
 app.use("/api/carreras", carrerasRoutes );
 app.use("/api/problematicas", problematicasRoutes );
 

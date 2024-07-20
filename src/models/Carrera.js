@@ -1,6 +1,7 @@
 import {DataTypes, INTEGER} from 'sequelize'
 import { sequelize } from '../database/database.js'
 import { Problematica } from './Problematica.js'
+import { Auxiliar } from './Auxiliar.js';
 
 
 export const Carrera = sequelize.define('carreras',{
@@ -12,6 +13,9 @@ export const Carrera = sequelize.define('carreras',{
     nombre_carrera:{
         type: DataTypes.STRING
     },
+    nombre_corto:{
+        type: DataTypes.STRING
+    },
     facultad:{
         type: DataTypes.STRING
     }
@@ -20,17 +24,18 @@ export const Carrera = sequelize.define('carreras',{
     hooks: {
         beforeValidate: (carrera, options) => {
             carrera.nombre_carrera = carrera.nombre_carrera.toUpperCase();  
+            carrera.nombre_corto = carrera.nombre_corto.toUpperCase();  
             carrera.facultad = carrera.facultad.toUpperCase();  
         }
     }
 });
 
-Carrera.hasMany(Problematica,{
+Carrera.hasMany(Auxiliar,{
     foreignKey: 'carrera_id',
     sourceKey: 'id_carrera'
 })
 
-Problematica.belongsTo(Carrera,{
+Auxiliar.belongsTo(Carrera,{
     foreignKey: 'carrera_id',
     targetId: 'id_carrera'
 })
