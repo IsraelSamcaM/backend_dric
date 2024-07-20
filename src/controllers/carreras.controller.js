@@ -21,9 +21,9 @@ export const getCarrera = async (req, res) => {
 }
 
 export const createCarrera = async (req, res) => {
-    const { nombre_carrera, facultad } = req.body;
+    const { nombre_carrera, nombre_corto , facultad } = req.body;
     try {
-        const newCarrera = await Carrera.create({ nombre_carrera, facultad });
+        const newCarrera = await Carrera.create({ nombre_carrera, nombre_corto, facultad });
         res.json(newCarrera);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -32,11 +32,11 @@ export const createCarrera = async (req, res) => {
 
 export const updateCarrera = async (req, res) => {
     const { id_carrera } = req.params; 
-    const { nombre_carrera, facultad } = req.body;
+    const { nombre_carrera, nombre_corto, facultad } = req.body;
     
     try {
         const [updated] = await Carrera.update(
-            { nombre_carrera, facultad },
+            { nombre_carrera, nombre_corto, facultad },
             { where: { id_carrera } }
         );
 

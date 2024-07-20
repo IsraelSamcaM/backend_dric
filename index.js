@@ -3,8 +3,9 @@ import { sequelize } from "./src/database/database.js";
 
 // import './src/models/Usuario.js'
 // import './src/models/Carrera.js'
-// import './src/models/Municipio.js'
+// import './src/models/Solicitante.js'
 // import './src/models/Problematica.js'
+// import './src/models/Auxiliar.js'
 
 async function main() {
     //await sequelize.sync({alter: true});
@@ -15,5 +16,5 @@ async function main() {
     });
 
 }
-
+1
 main();
