@@ -3,11 +3,13 @@ import {createSolicitante,
         deleteSolicitante,
         getSolicitante,
         getSolicitantes,
+        getTipoSolicitantes,
         updateSolicitante} from '../controllers/solicitantes.controller.js';
 
 const router = Router();
 
-router.get('/:tipo', getSolicitantes);
+router.get('/', getSolicitantes)
+router.get('/:tipo', getTipoSolicitantes);
 router.get('/:id_solicitante', getSolicitante);
 
 router.post('/', createSolicitante);
