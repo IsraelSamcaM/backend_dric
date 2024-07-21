@@ -3,6 +3,15 @@ import { Solicitante } from '../models/Solicitante.js';
 
 export const getSolicitantes = async (req, res) => {
     try {
+        const solicitantes = await Solicitante.findAll({})
+            res.json(solicitantes);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+export const getTipoSolicitantes = async (req, res) => {
+    try {
         const {tipo} = req.params;
         let solicitantes;
         if ( tipo == 'municipios'){
