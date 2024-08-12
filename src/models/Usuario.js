@@ -23,7 +23,7 @@ export const Usuario = sequelize.define('usuarios',{
         defaultValue:true 
     }
 },{
-    timestamps: false,
+    timestamps: true,
     hooks: {
         beforeValidate: (usuario, options) => {
             usuario.nombre_usuario = usuario.nombre_usuario.toUpperCase();  

@@ -6,6 +6,7 @@ import { sequelize } from "./src/database/database.js";
 // import './src/models/Solicitante.js'
 // import './src/models/Problematica.js'
 // import './src/models/Auxiliar.js'
+// import './src/models/Publicacion.js'
 
 async function main() {
     //await sequelize.sync({alter: true});
@@ -16,5 +17,5 @@ async function main() {
     });
 
 }
-1
+
 main();

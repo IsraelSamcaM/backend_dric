@@ -1,9 +1,12 @@
+import { Auxiliar } from '../models/Auxiliar.js';
 import { Usuario } from '../models/Usuario.js';
 import {v4 as uuidv4 } from 'uuid'
 
 export const getUsuarios = async (req, res) => {
     try {
         const usuarios = await Usuario.findAll();
+        const auxiliares = await Auxiliar.findAll();
+        console.log(auxiliares)
         res.json(usuarios);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -22,9 +25,9 @@ export const getUsuario = async (req, res) => {
 }
 
 export const createUsuario = async (req, res) => {
-    const { nombre_usuario, contrasenia_usuario, email_usuario, tipo_usuario, codsiss } = req.body;
+    const { nombre_usuario, contrasenia_usuario, email_usuario } = req.body;
     try {
-        const newUsuario = await Usuario.create({ nombre_usuario, contrasenia_usuario, email_usuario, tipo_usuario, codsiss });
+        const newUsuario = await Usuario.create({ nombre_usuario, contrasenia_usuario, email_usuario });
         res.json(newUsuario);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -34,7 +37,7 @@ export const createUsuario = async (req, res) => {
 export const updateUsuario = async (req, res) => {
     try {
         const { id_usuario } = req.params;
-        const { nombre_usuario, contrasenia_usuario, email_usuario, tipo_usuario, codsiss } = req.body;
+        const { nombre_usuario, contrasenia_usuario, email_usuario } = req.body;
 
         const usuario = await Usuario.findByPk(id_usuario);
         if (!usuario) return res.status(404).json({ message: "El usuario no existe" });
@@ -42,8 +45,6 @@ export const updateUsuario = async (req, res) => {
         usuario.nombre_usuario = nombre_usuario;
         usuario.contrasenia_usuario = contrasenia_usuario;
         usuario.email_usuario = email_usuario;
-        usuario.tipo_usuario = tipo_usuario;
-        usuario.codsiss = codsiss;
 
         await usuario.save();
 
