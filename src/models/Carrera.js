@@ -20,7 +20,7 @@ export const Carrera = sequelize.define('carreras',{
         type: DataTypes.STRING
     }
 },{
-    timestamps: false,
+    timestamps: true,
     hooks: {
         beforeValidate: (carrera, options) => {
             carrera.nombre_carrera = carrera.nombre_carrera.toUpperCase();  

@@ -22,7 +22,7 @@ export const Solicitante = sequelize.define('solicitantes',{
         type: DataTypes.STRING
     }
 },{
-    timestamps: false,
+    timestamps: true,
     hooks: {
         beforeValidate: (municipio, options) => {
             municipio.nombre_solicitante = municipio.nombre_solicitante.toUpperCase();  
