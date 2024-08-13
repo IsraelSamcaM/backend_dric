@@ -200,7 +200,7 @@ export const getProblematica = async (req, res) => {
 
 export const createProblematica = async (req, res) => {
     const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono,fecha,zona,
-            id_solicitante, id_carrera } = req.body;
+            id_solicitante, id_carrera, publicado } = req.body;
         
     try {
         const newProblematica = await Problematica.create({ 
@@ -225,9 +225,9 @@ export const createProblematica = async (req, res) => {
             });
         }
 
-        const p = false
+        //const p = false
 
-        if (p){
+        if (publicado){
             await Publicacion.create({
                 problematicaIdProblematica: newProblematica.id_problematica,
                 activo: true
