@@ -15,7 +15,7 @@ export const Solicitante = sequelize.define('solicitantes',{
     nombre_corto_sigla:{
         type: DataTypes.STRING
     },
-    juridiccion:{
+    jurisdiccion:{
         type: DataTypes.STRING
     },
     tipo_solicitante:{
