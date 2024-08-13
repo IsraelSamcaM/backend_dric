@@ -38,6 +38,8 @@ export const getProblematicas = async (req, res) => {
                         activo: true
                     }
                 }
+            ],order: [
+                ['updatedAt', 'DESC']
             ]
         });
 
@@ -61,6 +63,7 @@ export const getProblematicas = async (req, res) => {
                 fecha: problematica.fecha,
                 zona: problematica.zona,
                 publicado: publication.createdAt,
+                activo: publication.activo,
                 actualizado: problematica.updatedAt,
                 creado: problematica.createdAt,
                 solicitante_id: problematica.solicitante_id,
@@ -95,6 +98,8 @@ export const getTableProblematicas = async (req, res) => {
                 {
                     model: Publicacion,
                 }
+            ],order: [
+                ['updatedAt', 'DESC']
             ]
         });
 
