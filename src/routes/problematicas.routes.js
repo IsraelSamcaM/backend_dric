@@ -13,7 +13,7 @@ router.get('/tabla/', getTableProblematicas);
 router.put('/publicacion/:id_problematica', updatePublishProblematica);
 
 
-router.get('/', getProblematicas);
+router.get('/', getTableProblematicas);
 router.get('/:id_problematica', getProblematica);
 
 
