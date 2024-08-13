@@ -3,12 +3,19 @@ import {createProblematica,
         deleteProblematica,
         getProblematica,
         getProblematicas,
-        updateProblematica } from '../controllers/problematicas.controller.js'
+        updateProblematica,
+        getTableProblematicas,
+        updatePublishProblematica
+ } from '../controllers/problematicas.controller.js'
 
 const router = Router();
+router.get('/tabla-problematicas/', getTableProblematicas);
+router.put('/publicacion/:id_problematica', updatePublishProblematica);
+
 
 router.get('/', getProblematicas);
 router.get('/:id_problematica', getProblematica);
+
 
 router.post('/', createProblematica);
 router.put('/:id_problematica', updateProblematica);

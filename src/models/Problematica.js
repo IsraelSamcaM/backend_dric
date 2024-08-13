@@ -57,10 +57,6 @@ export const Problematica = sequelize.define('problematicas', {
     zona: {
         type: DataTypes.STRING,
         allowNull: true
-    },
-    publicado: {
-        type: DataTypes.BOOLEAN,
-        allowNull: true
     }
 }, {
     timestamps: true,
