@@ -9,7 +9,7 @@ import {createProblematica,
  } from '../controllers/problematicas.controller.js'
 
 const router = Router();
-router.get('/tabla-problematicas/', getTableProblematicas);
+router.get('/tabla/', getTableProblematicas);
 router.put('/publicacion/:id_problematica', updatePublishProblematica);
 
 
