@@ -27,7 +27,7 @@ export const Solicitante = sequelize.define('solicitantes',{
         beforeValidate: (municipio, options) => {
             municipio.nombre_solicitante = municipio.nombre_solicitante.toUpperCase();  
             municipio.nombre_corto_sigla = municipio.nombre_corto_sigla.toUpperCase();  
-            municipio.juridiccion = municipio.juridiccion.toUpperCase();  
+            municipio.jurisdiccion = municipio.jurisdiccion.toUpperCase();  
             municipio.tipo_solicitante = municipio.tipo_solicitante.toUpperCase();  
         }
     }

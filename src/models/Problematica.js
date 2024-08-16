@@ -50,6 +50,11 @@ export const Problematica = sequelize.define('problematicas', {
         type: DataTypes.INTEGER,
         allowNull: true
     },
+
+    telefono_institucional: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     fecha: {
         type: DataTypes.DATE,
         allowNull: true
@@ -57,7 +62,12 @@ export const Problematica = sequelize.define('problematicas', {
     zona: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    // Para la validacion de parte del administrador
+    validado: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+    },
 }, {
     timestamps: true,
     hooks: {

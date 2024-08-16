@@ -3,7 +3,7 @@ import { Carrera } from '../models/Carrera.js';
 import { Auxiliar } from '../models/Auxiliar.js';
 import { Solicitante } from '../models/Solicitante.js';
 import { Publicacion } from '../models/Publicacion.js';
-import { where } from 'sequelize';
+import { Usuario } from '../models/Usuario.js';
 
 
 // export const formatDate = (date) => {
@@ -37,6 +37,10 @@ export const getProblematicas = async (req, res) => {
                     where:{
                         activo: true
                     }
+                },
+                {
+                    model: Usuario,
+                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
                 }
             ],order: [
                 ['updatedAt', 'DESC']
@@ -66,9 +70,11 @@ export const getProblematicas = async (req, res) => {
                 activo: publication.activo,
                 actualizado: problematica.updatedAt,
                 creado: problematica.createdAt,
+                usuario: problematica.usuario,
                 solicitante_id: problematica.solicitante_id,
                 solicitante: problematica.solicitante,
                 carreras: carreras
+
                 
             };
         });
@@ -97,11 +103,16 @@ export const getTableProblematicas = async (req, res) => {
                 },
                 {
                     model: Publicacion,
-                }
+                },
+                {
+                    model: Usuario,
+                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                },
             ],order: [
                 ['updatedAt', 'DESC']
             ]
         });
+        //console.log(problematicas)
 
         const result = problematicas.map(problematica => {
 
@@ -123,12 +134,14 @@ export const getTableProblematicas = async (req, res) => {
                 cuando: problematica.cuando,
                 contacto: problematica.contacto,
                 telefono: problematica.telefono,
-                //fecha: problematica.fecha,
+                telefono_institucional: problematica.telefono_institucional,
+                fecha: problematica.fecha,
                 zona: problematica.zona,
                 publicado: recentPublication.createdAt, 
                 activo: recentPublication.activo, 
                 actualizado: problematica.updatedAt,
                 creado: problematica.createdAt,
+                usuario: problematica.usuario,
                 solicitante_id: problematica.solicitante_id,
                 solicitante: problematica.solicitante,
                 carreras: carreras
@@ -186,6 +199,7 @@ export const getProblematica = async (req, res) => {
             cuando: problematica.cuando,
             contacto: problematica.contacto,
             telefono: problematica.telefono,
+            telefono_institucional: problematica.telefono_institucional,
             fecha: problematica.fecha,
             zona: problematica.zona,
             publicado: publication ? publication.createdAt : null, 
@@ -204,8 +218,8 @@ export const getProblematica = async (req, res) => {
 
 
 export const createProblematica = async (req, res) => {
-    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono,fecha,zona,
-            id_solicitante, id_carrera, publicado } = req.body;
+    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono/*, telefono_institucional*/ 
+            ,fecha,zona,id_solicitante, id_carrera, publicado} = req.body;
         
     try {
         const newProblematica = await Problematica.create({ 
@@ -218,8 +232,11 @@ export const createProblematica = async (req, res) => {
             cuando,
             contacto,
             telefono,
+            telefono_institucional: telefono,
             fecha,
             zona,
+            validado : true,
+            usuarioIdUsuario: 1,
             solicitante_id: id_solicitante,
         });
 
@@ -230,7 +247,6 @@ export const createProblematica = async (req, res) => {
             });
         }
 
-        //const p = false
 
         if (publicado){
             await Publicacion.create({
@@ -271,6 +287,7 @@ export const updateProblematica = async (req, res) => {
             cuando,
             contacto,
             telefono,
+            telefono_institucional,
             fecha,
             zona,
             solicitante_id : id_solicitante,
