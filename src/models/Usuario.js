@@ -1,5 +1,6 @@
 import {DataTypes, INTEGER} from 'sequelize'
 import { sequelize } from '../database/database.js'
+import { Problematica } from './Problematica.js';
 
 
 
@@ -30,3 +31,13 @@ export const Usuario = sequelize.define('usuarios',{
         }
     }
 });
+
+Usuario.hasMany(Problematica,{
+    foreingKey: 'usuario_id',
+    sourceKey: 'id_usuario'
+})
+
+Problematica.belongsTo(Usuario,{
+    foreingKey: 'usuario_id',
+    targetId: 'id_usuario'
+})

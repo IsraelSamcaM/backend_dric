@@ -40,9 +40,9 @@ export const getSolicitante = async (req, res) => {
 }
 
 export const createSolicitante = async (req, res) => {
-    const { nombre_solicitante, nombre_corto_sigla, juridiccion, tipo_solicitante } = req.body;
+    const { nombre_solicitante, nombre_corto_sigla, jurisdiccion, tipo_solicitante } = req.body;
     try {
-        const newSolicitante = await Solicitante.create({ nombre_solicitante, nombre_corto_sigla, juridiccion, tipo_solicitante });
+        const newSolicitante = await Solicitante.create({ nombre_solicitante, nombre_corto_sigla, jurisdiccion, tipo_solicitante });
         res.json(newSolicitante);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -51,11 +51,11 @@ export const createSolicitante = async (req, res) => {
 
 export const updateSolicitante = async (req, res) => {
     const { id_solicitante } = req.params; 
-    const { nombre_solicitante, nombre_corto_sigla, juridiccion, tipo_solicitante} = req.body;
+    const { nombre_solicitante, nombre_corto_sigla, jurisdiccion, tipo_solicitante} = req.body;
     
     try {
         const [updated] = await Solicitante.update(
-            { nombre_solicitante, nombre_corto_sigla, juridiccion, tipo_solicitante },
+            { nombre_solicitante, nombre_corto_sigla, jurisdiccion, tipo_solicitante },
             { where: { id_solicitante } }
         );
 

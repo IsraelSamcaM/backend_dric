@@ -9,7 +9,7 @@ import { sequelize } from "./src/database/database.js";
 // import './src/models/Publicacion.js'
 
 async function main() {
-    //await sequelize.sync({alter: true});
+    // await sequelize.sync({alter: true});
     const PORT = process.env.PORT || 4000;
 
     app.listen(PORT, () => {
