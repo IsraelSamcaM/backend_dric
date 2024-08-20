@@ -64,7 +64,7 @@ export const getProblematicas = async (req, res) => {
                 cuando: problematica.cuando,
                 contacto: problematica.contacto,
                 telefono: problematica.telefono,
-                fecha: problematica.fecha,
+                telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
                 publicado: publication.createdAt,
                 activo: publication.activo,
@@ -135,7 +135,6 @@ export const getTableProblematicas = async (req, res) => {
                 contacto: problematica.contacto,
                 telefono: problematica.telefono,
                 telefono_institucional: problematica.telefono_institucional,
-                fecha: problematica.fecha,
                 zona: problematica.zona,
                 publicado: recentPublication.createdAt, 
                 activo: recentPublication.activo, 
@@ -174,9 +173,9 @@ export const getProblematica = async (req, res) => {
                 },
                 {
                     model: Publicacion,
-                    where: {
-                        activo: true
-                    }
+                    // where: {
+                    //     activo: true
+                    // }
                 }
             ]
         });
@@ -200,7 +199,6 @@ export const getProblematica = async (req, res) => {
             contacto: problematica.contacto,
             telefono: problematica.telefono,
             telefono_institucional: problematica.telefono_institucional,
-            fecha: problematica.fecha,
             zona: problematica.zona,
             publicado: publication ? publication.createdAt : null, 
             actualizado: problematica.updatedAt,
@@ -218,8 +216,8 @@ export const getProblematica = async (req, res) => {
 
 
 export const createProblematica = async (req, res) => {
-    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono/*, telefono_institucional*/ 
-            ,fecha,zona,id_solicitante, id_carrera, publicado} = req.body;
+    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono, telefono_institucional
+            ,zona,id_solicitante, id_carrera, publicado} = req.body;
         
     try {
         const newProblematica = await Problematica.create({ 
@@ -232,8 +230,7 @@ export const createProblematica = async (req, res) => {
             cuando,
             contacto,
             telefono,
-            telefono_institucional: telefono,
-            fecha,
+            telefono_institucional,
             zona,
             validado : true,
             usuarioIdUsuario: 1,
@@ -269,7 +266,7 @@ export const createProblematica = async (req, res) => {
 
 export const updateProblematica = async (req, res) => {
     const { id_problematica } = req.params;
-    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono,fecha,zona,
+    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono, telefono_institucional,zona,
         id_solicitante, id_carrera } = req.body;
 
     try {
@@ -288,7 +285,6 @@ export const updateProblematica = async (req, res) => {
             contacto,
             telefono,
             telefono_institucional,
-            fecha,
             zona,
             solicitante_id : id_solicitante,
         });

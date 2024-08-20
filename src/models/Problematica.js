@@ -55,10 +55,6 @@ export const Problematica = sequelize.define('problematicas', {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    fecha: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
     zona: {
         type: DataTypes.STRING,
         allowNull: true
