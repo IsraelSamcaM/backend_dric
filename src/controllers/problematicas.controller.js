@@ -233,7 +233,7 @@ export const createProblematica = async (req, res) => {
             telefono_institucional,
             zona,
             validado : true,
-            usuarioIdUsuario: 1,
+            usuario_id: 1,
             solicitante_id: id_solicitante,
         });
 
