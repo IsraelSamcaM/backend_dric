@@ -12,7 +12,7 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 const limiter = rateLimit({
-    max: 100,
+    max: 200,
     windowMs: 60 * 60 * 1000,
     message: 'Hemos recibido demasiadas solicitudes de esta IP. Espere 1 hora'
 });
