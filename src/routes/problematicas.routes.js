@@ -5,12 +5,15 @@ import {createProblematica,
         getProblematicas,
         updateProblematica,
         getTableProblematicas,
-        updatePublishProblematica
+        updatePublishProblematica,
+        getSolicitudes,
+        verifyToken
  } from '../controllers/problematicas.controller.js'
 
 const router = Router();
-router.get('/tabla/', getTableProblematicas);
-router.put('/publicacion/:id_problematica', updatePublishProblematica);
+router.get('/tabla/', verifyToken, getTableProblematicas);
+router.get('/solicitudes/', verifyToken, getSolicitudes);
+router.put('/publicacion/:id_problematica', verifyToken,updatePublishProblematica);
 
 
 router.get('/',getProblematicas);
@@ -18,7 +21,7 @@ router.get('/:id_problematica', getProblematica);
 
 
 router.post('/', createProblematica);
-router.put('/:id_problematica', updateProblematica);
-router.delete('/:id_problematica', deleteProblematica);
+router.put('/:id_problematica', verifyToken ,updateProblematica);
+router.delete('/:id_problematica', verifyToken,deleteProblematica);
 
 export default router;
