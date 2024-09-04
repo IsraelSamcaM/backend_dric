@@ -110,7 +110,7 @@ export const getProblematicas = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: problematica.contacto,
-                telefono: problematica.telefono,
+                telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
                 publicado: publication.createdAt,
@@ -180,7 +180,7 @@ export const getTableProblematicas = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: problematica.contacto,
-                telefono: problematica.telefono,
+                telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
                 publicado: recentPublication.createdAt,
@@ -241,7 +241,7 @@ export const getProblematica = async (req, res) => {
             para_que: problematica.para_que,
             cuando: problematica.cuando,
             contacto: problematica.contacto,
-            telefono: problematica.telefono,
+            telefono: problematica.telefono ? problematica.telefono : "0",
             telefono_institucional: problematica.telefono_institucional,
             zona: problematica.zona,
             publicado: publication ? publication.createdAt : null, 
@@ -261,7 +261,7 @@ export const getProblematica = async (req, res) => {
 
 export const createProblematica = async (req, res) => {
     const token = req.headers['x-access-token'];
-    const { titulo, planteamiento, causas, efectos, que, como, para_que, cuando, contacto, telefono, telefono_institucional, zona, id_solicitante, id_carrera, publicado } = req.body;
+    const { titulo, planteamiento, causas, efectos, que, como, para_que, cuando, contacto, telefono , telefono_institucional, zona, id_solicitante, id_carrera, publicado } = req.body;
 
     if (!token) {
         return res.status(401).json({
@@ -269,6 +269,7 @@ export const createProblematica = async (req, res) => {
             message: 'No token provided',
         });
     }
+    
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -474,7 +475,7 @@ export const getSolicitudes = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: problematica.contacto,
-                telefono: problematica.telefono,
+                telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
                 publicado: publication.createdAt,
