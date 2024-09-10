@@ -7,11 +7,13 @@ import {createProblematica,
         getTableProblematicas,
         updatePublishProblematica,
         getSolicitudes,
-        verifyToken
+        verifyToken,
+        getProblematicasUser
  } from '../controllers/problematicas.controller.js'
 
 const router = Router();
 router.get('/tabla/', verifyToken, getTableProblematicas);
+router.get('/registros/', getProblematicasUser);
 router.get('/solicitudes/', verifyToken, getSolicitudes);
 router.put('/publicacion/:id_problematica', verifyToken,updatePublishProblematica);
 
