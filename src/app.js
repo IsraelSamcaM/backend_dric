@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-//import morgan from "morgan";
+import './tasks/updateProblematicas.js';
 
 const app = express();
 

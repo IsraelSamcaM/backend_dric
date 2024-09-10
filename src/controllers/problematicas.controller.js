@@ -48,24 +48,12 @@ export const verifyToken = async (req, res, next) => {
 };
 
 
-
-
-// export const formatDate = (date) => {
-//     return date
-//         ? new Date(date).toLocaleDateString('es-ES', {
-//             day: '2-digit',
-//             month: '2-digit',
-//             year: 'numeric'
-//         })
-//         : null;
-// };
-
-
 export const getProblematicas = async (req, res) => {
     try {
         const problematicas = await Problematica.findAll({
             where:{
-                validado: true
+                validado: true,
+                disponible: true
             },
             include: [
                 {
@@ -82,7 +70,7 @@ export const getProblematicas = async (req, res) => {
                 {
                     model: Publicacion,
                     where:{
-                        activo: true,
+                        activo: true
                     }
                 },
                 {
@@ -109,7 +97,7 @@ export const getProblematicas = async (req, res) => {
                 como: problematica.como,
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
-                contacto: problematica.contacto,
+                contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
@@ -138,7 +126,8 @@ export const getTableProblematicas = async (req, res) => {
     try {
         const problematicas = await Problematica.findAll({
             where:{
-                validado: true
+                validado: true,
+                disponible: true
             },
             include: [
                 {
@@ -179,7 +168,7 @@ export const getTableProblematicas = async (req, res) => {
                 como: problematica.como,
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
-                contacto: problematica.contacto,
+                contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
@@ -218,11 +207,12 @@ export const getProblematica = async (req, res) => {
                     model: Solicitante
                 },
                 {
-                    model: Publicacion,
-                    // where: {
-                    //     activo: true
-                    // }
-                }
+                    model: Publicacion
+                },
+                {
+                    model: Usuario,
+                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                },
             ]
         });
         if (!problematica || !problematica.publicaciones.length) {
@@ -240,13 +230,14 @@ export const getProblematica = async (req, res) => {
             como: problematica.como,
             para_que: problematica.para_que,
             cuando: problematica.cuando,
-            contacto: problematica.contacto,
+            contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
             telefono: problematica.telefono ? problematica.telefono : "0",
             telefono_institucional: problematica.telefono_institucional,
             zona: problematica.zona,
             publicado: publication ? publication.createdAt : null, 
             actualizado: problematica.updatedAt,
             creado: problematica.createdAt,
+            usuario: problematica.usuario,
             solicitante_id: problematica.solicitante_id,
             solicitante: problematica.solicitante,
             carreras: carreras
@@ -261,7 +252,8 @@ export const getProblematica = async (req, res) => {
 
 export const createProblematica = async (req, res) => {
     const token = req.headers['x-access-token'];
-    const { titulo, planteamiento, causas, efectos, que, como, para_que, cuando, contacto, telefono , telefono_institucional, zona, id_solicitante, id_carrera, publicado } = req.body;
+    const { titulo, planteamiento, causas, efectos, que, como, para_que, cuando, contacto_cargo, contacto_nombre,
+        telefono , telefono_institucional, zona, id_solicitante, id_carrera, publicado } = req.body;
 
     if (!token) {
         return res.status(401).json({
@@ -269,7 +261,6 @@ export const createProblematica = async (req, res) => {
             message: 'No token provided',
         });
     }
-    
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -289,12 +280,14 @@ export const createProblematica = async (req, res) => {
             como,
             para_que,
             cuando,
-            contacto,
+            contacto_cargo,
+            contacto_nombre,
             telefono,
             telefono_institucional,
             zona,
             validado: valid,
-            usuario_id: userId, // Add missing comma
+            disponible: valid,
+            usuario_id: userId,
             solicitante_id: id_solicitante,
         });
 
@@ -324,7 +317,7 @@ export const createProblematica = async (req, res) => {
 
 export const updateProblematica = async (req, res) => {
     const { id_problematica } = req.params;
-    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto,telefono, telefono_institucional,zona,
+    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto_cargo, contacto_nombre,telefono, telefono_institucional,zona,
         id_solicitante, id_carrera } = req.body;
 
     try {
@@ -338,7 +331,8 @@ export const updateProblematica = async (req, res) => {
             que,como,
             para_que,
             cuando,
-            contacto,
+            contacto_cargo,
+            contacto_nombre,
             telefono,
             telefono_institucional,
             zona,
@@ -430,7 +424,8 @@ export const getSolicitudes = async (req, res) => {
     try {
         const problematicas = await Problematica.findAll({
             where:{
-                validado: false
+                validado: false,
+                disponible: true
             },
             include: [
                 {
@@ -474,7 +469,7 @@ export const getSolicitudes = async (req, res) => {
                 como: problematica.como,
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
-                contacto: problematica.contacto,
+                contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
@@ -494,6 +489,88 @@ export const getSolicitudes = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const getProblematicasUser = async (req, res) => {
+    try {
+        const token = req.headers['x-access-token'];
+    
+        if (!token) {
+            return res.status(401).json({
+                auth: false,
+                message: 'No token provided',
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await Usuario.findByPk(decoded.id);
+        if (!user) { 
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        if (user.tipo_usuario !== 'BECARIO') {
+            return res.status(403).json({ message: 'Access denied. Only BECARIO users are allowed.' });
+        }
+
+        const problematicas = await Problematica.findAll({
+            where: {disponible: false},
+            include: [
+                {
+                    model: Auxiliar,
+                    include: [
+                        {
+                            model: Carrera
+                        }
+                    ]
+                },
+                {
+                    model: Solicitante
+                },
+                {
+                    model: Publicacion
+                },
+                {
+                    model: Usuario,
+                    where: { id_usuario: user.id_usuario },
+                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                }
+            ]
+        });
+
+        const result = problematicas.map(problematica => {
+            const carreras = problematica.auxiliares.map(aux => aux.carrera);
+            const publication = problematica.publicaciones[0];
+            
+            return {
+                id_problematica: problematica.id_problematica,
+                titulo: problematica.titulo,
+                planteamiento: problematica.planteamiento,
+                causas: problematica.causas,
+                efectos: problematica.efectos,
+                que: problematica.que,
+                como: problematica.como,
+                para_que: problematica.para_que,
+                cuando: problematica.cuando,
+                contacto: `${problematica.contacto_cargo}, ${problematica.contacto_nombre}`,
+                telefono: problematica.telefono ? problematica.telefono : "0",
+                telefono_institucional: problematica.telefono_institucional,
+                zona: problematica.zona,
+                publicado: publication ? publication.createdAt : null,
+                actualizado: problematica.updatedAt,
+                creado: problematica.createdAt,
+                usuario: problematica.usuario,
+                solicitante_id: problematica.solicitante_id,
+                solicitante: problematica.solicitante,
+                carreras: carreras
+            };
+        });
+
+        return res.json(result);
+    } catch (error) {
+        console.error('Error en getProblematicasUser:', error);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 
 export const validationProblematica = async (req, res) => {
     const { id_problematica } = req.params;

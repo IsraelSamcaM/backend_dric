@@ -42,7 +42,11 @@ export const Problematica = sequelize.define('problematicas', {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    contacto: {
+    contacto_cargo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    contacto_nombre: {
         type: DataTypes.STRING,
         allowNull: true
     },
@@ -64,12 +68,21 @@ export const Problematica = sequelize.define('problematicas', {
         type: DataTypes.BOOLEAN,
         allowNull: true
     },
+    // Para la espera de 48 hrs 
+    disponible: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+    },
 }, {
     timestamps: true,
     hooks: {
         beforeValidate: (problematica, options) => {
-            problematica.planteamiento = problematica.planteamiento.toUpperCase();   
-            problematica.titulo = problematica.titulo.toUpperCase();   
+            if (problematica.planteamiento) {
+                problematica.planteamiento = problematica.planteamiento.toUpperCase();
+            }
+            if (problematica.titulo) {
+                problematica.titulo = problematica.titulo.toUpperCase();
+            }
         }
     }
 });
