@@ -6,55 +6,13 @@ import { Publicacion } from '../models/Publicacion.js';
 import { Usuario } from '../models/Usuario.js';
 
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
-import { where } from 'sequelize';
-
 dotenv.config(); 
-
-export const verifyToken = async (req, res, next) => {
-    const token = req.headers['x-access-token'];
-    if (!token) {
-        return res.status(401).json({
-            auth: false,
-            message: 'No token provided',
-        });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await Usuario.findByPk(decoded.id);
-        if (!user) {
-            return res.status(404).json({
-                auth: false,
-                message: 'User not found',
-            });
-        }
-
-        // Permitir el acceso solo si el usuario es un ADMINISTRADOR
-        if (user.tipo_usuario !== 'ADMINISTRADOR') {
-            return res.status(401).json({
-                auth: false,
-                message: 'Access restricted to administrators only',
-            });
-        }
-
-        next(); // Continuar si el usuario es un ADMINISTRADOR
-    } catch (error) {
-        return res.status(500).json({
-            auth: false,
-            message: 'Failed to authenticate token',
-        });
-    }
-};
-
 
 export const getProblematicas = async (req, res) => {
     try {
         const problematicas = await Problematica.findAll({
             where:{
-                validado: true,
-                disponible: true
-            },
+                validado: true            },
             include: [
                 {
                     model: Auxiliar,
@@ -110,25 +68,85 @@ export const getProblematicas = async (req, res) => {
                 solicitante_id: problematica.solicitante_id,
                 solicitante: problematica.solicitante,
                 carreras: carreras
-
-                
             };
         });
-        return res.json(result);
+        return res.status(200).json(result);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-}
+};
 
+export const getProblematica = async (req, res) => {
+    const { id_problematica } = req.params;
+    try {
+        const problematica = await Problematica.findOne({
+            where: { id_problematica },
+            include: [
+                {
+                    model: Auxiliar,
+                    include: [
+                        {
+                            model: Carrera
+                        }
+                    ]
+                },
+                {
+                    model: Solicitante
+                },
+                {
+                    model: Publicacion
+                },
+                {
+                    model: Usuario,
+                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                },
+            ]
+        });
+        if (!problematica || !problematica.publicaciones.length) {
+            return res.status(404).json({ message: "Problematica not found" });
+        }
+        const carreras = problematica.auxiliares.map(aux => aux.carrera);
+        const publication = problematica.publicaciones[0]; 
+        const result = {
+            id_problematica: problematica.id_problematica,
+            titulo: problematica.titulo,
+            planteamiento: problematica.planteamiento,
+            causas: problematica.causas,
+            efectos: problematica.efectos,
+            que: problematica.que,
+            como: problematica.como,
+            para_que: problematica.para_que,
+            cuando: problematica.cuando,
+            contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
+            telefono: problematica.telefono ? problematica.telefono : "0",
+            telefono_institucional: problematica.telefono_institucional,
+            zona: problematica.zona,
+            publicado: publication ? publication.createdAt : null, 
+            actualizado: problematica.updatedAt,
+            creado: problematica.createdAt,
+            usuario: problematica.usuario,
+            solicitante_id: problematica.solicitante_id,
+            solicitante: problematica.solicitante,
+            carreras: carreras
+        };
 
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
 
 export const getTableProblematicas = async (req, res) => {
+    if (req.userRole !== 'ADMINISTRADOR') {
+        return res.status(403).json({
+            auth: false,
+            message: 'Access restricted to administrators only',
+        });
+    }
     try {
         const problematicas = await Problematica.findAll({
             where:{
-                validado: true,
-                disponible: true
-            },
+                validado: true            },
             include: [
                 {
                     model: Auxiliar,
@@ -183,94 +201,20 @@ export const getTableProblematicas = async (req, res) => {
                 carreras: carreras
             };
         });
-        return res.json(result);
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-}
-
-export const getProblematica = async (req, res) => {
-    const { id_problematica } = req.params;
-    try {
-        const problematica = await Problematica.findOne({
-            where: { id_problematica },
-            include: [
-                {
-                    model: Auxiliar,
-                    include: [
-                        {
-                            model: Carrera
-                        }
-                    ]
-                },
-                {
-                    model: Solicitante
-                },
-                {
-                    model: Publicacion
-                },
-                {
-                    model: Usuario,
-                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
-                },
-            ]
-        });
-        if (!problematica || !problematica.publicaciones.length) {
-            return res.status(404).json({ message: "Problematica not found or not published" });
-        }
-        const carreras = problematica.auxiliares.map(aux => aux.carrera);
-        const publication = problematica.publicaciones[0]; 
-        const result = {
-            id_problematica: problematica.id_problematica,
-            titulo: problematica.titulo,
-            planteamiento: problematica.planteamiento,
-            causas: problematica.causas,
-            efectos: problematica.efectos,
-            que: problematica.que,
-            como: problematica.como,
-            para_que: problematica.para_que,
-            cuando: problematica.cuando,
-            contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
-            telefono: problematica.telefono ? problematica.telefono : "0",
-            telefono_institucional: problematica.telefono_institucional,
-            zona: problematica.zona,
-            publicado: publication ? publication.createdAt : null, 
-            actualizado: problematica.updatedAt,
-            creado: problematica.createdAt,
-            usuario: problematica.usuario,
-            solicitante_id: problematica.solicitante_id,
-            solicitante: problematica.solicitante,
-            carreras: carreras
-        };
-
-        return res.json(result);
+        return res.status(200).json(result);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
 
-
 export const createProblematica = async (req, res) => {
-    const token = req.headers['x-access-token'];
     const { titulo, planteamiento, causas, efectos, que, como, para_que, cuando, contacto_cargo, contacto_nombre,
-        telefono , telefono_institucional, zona, id_solicitante, id_carrera, publicado } = req.body;
+        telefono, telefono_institucional, zona, id_solicitante, id_carrera, publicado } = req.body;
 
-    if (!token) {
-        return res.status(401).json({
-            auth: false,
-            message: 'No token provided',
-        });
-    }
+    const valid = req.userRole === 'ADMINISTRADOR';
+    const userId = req.userId; 
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await Usuario.findByPk(decoded.id);
-        if (!user) { return res.status(404).json({ message: 'User not found' })}
-
-        let valid = false;
-        if (user.tipo_usuario === 'ADMINISTRADOR') { valid = true }
-
-        const userId = user.id_usuario
         const newProblematica = await Problematica.create({
             titulo,
             planteamiento,
@@ -298,10 +242,7 @@ export const createProblematica = async (req, res) => {
             });
         }
 
-        let isPublicado = publicado;
-        if (user.tipo_usuario === 'BECARIO') {
-            isPublicado = false;
-        }
+        const isPublicado = req.userRole === 'ENTIDAD' ? false : publicado;
 
         await Publicacion.create({
             problematicaIdProblematica: newProblematica.id_problematica,
@@ -314,21 +255,29 @@ export const createProblematica = async (req, res) => {
     }
 };
 
-
 export const updateProblematica = async (req, res) => {
     const { id_problematica } = req.params;
-    const { titulo, planteamiento,causas,efectos,que,como,para_que,cuando,contacto_cargo, contacto_nombre,telefono, telefono_institucional,zona,
-        id_solicitante, id_carrera } = req.body;
+    const { 
+        titulo, planteamiento, causas, efectos, que, como, para_que, cuando, 
+        contacto_cargo, contacto_nombre, telefono, telefono_institucional, zona, 
+        id_solicitante, id_carrera 
+    } = req.body;
 
     try {
         const problematica = await Problematica.findOne({ where: { id_problematica } });
-        if (!problematica) return res.status(404).json({ message: "La Problematica no existe" });
+        if (!problematica) return res.status(404).json({ message: "Problem not found" });
+
+        if (req.userRole === 'ENTIDAD' && problematica.validado === true) {
+            return res.status(403).json({ message: "You cannot edit a validated problem" });
+        }
+
         await problematica.update({
             titulo, 
             planteamiento,
             causas,
             efectos,
-            que,como,
+            que,
+            como,
             para_que,
             cuando,
             contacto_cargo,
@@ -339,10 +288,7 @@ export const updateProblematica = async (req, res) => {
             solicitante_id: id_solicitante,
         });
 
-        await Auxiliar.destroy({
-            where: { problematicaIdProblematica: id_problematica }
-        });
-
+        await Auxiliar.destroy({ where: { problematicaIdProblematica: id_problematica } });
         for (const carreraId of id_carrera) {
             await Auxiliar.create({
                 problematicaIdProblematica: id_problematica,
@@ -350,7 +296,7 @@ export const updateProblematica = async (req, res) => {
             });
         }
 
-        if (problematica.validado === false) {
+        if (req.userRole === 'ADMINISTRADOR' && problematica.validado === false) {
             await problematica.update({
                 validado: true
             });
@@ -360,9 +306,15 @@ export const updateProblematica = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const deleteProblematica = async (req, res) => {
+    if (req.userRole !== 'ADMINISTRADOR') {
+        return res.status(403).json({
+            auth: false,
+            message: 'Access restricted to administrators only',
+        });
+    }
     try {
         const { id_problematica } = req.params;
 
@@ -384,16 +336,19 @@ export const deleteProblematica = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const updatePublishProblematica = async (req, res) => {
     const { id_problematica } = req.params;
     const { publicado } = req.body;
 
     try {
-        const problematica = await Problematica.findByPk(id_problematica);
+        if (req.userRole !== 'ADMINISTRADOR') {
+            return res.status(403).json({ message: "Access denied. Only administrators can update publications." });
+        }
 
-        if (!problematica) return res.status(404).json({ message: "La Problematica no existe" });
+        const problematica = await Problematica.findByPk(id_problematica);
+        if (!problematica) return res.status(404).json({ message: "Problem not found." });
 
         if (publicado) {
             await Publicacion.update(
@@ -412,20 +367,25 @@ export const updatePublishProblematica = async (req, res) => {
             );
         }
 
-        res.status(200).json({ message: "Publicacion actualizada correctamente" });
+        res.status(200).json({ message: "Publication updated successfully." });
         
     } catch (error) {
-        console.error("Error al actualizar la publicacion: ", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        console.error("Error updating the publication: ", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 };
 
 export const getSolicitudes = async (req, res) => {
+    if (req.userRole !== 'ADMINISTRADOR') {
+        return res.status(403).json({
+            auth: false,
+            message: 'Access restricted to administrators only',
+        });
+    }
     try {
         const problematicas = await Problematica.findAll({
             where:{
                 validado: false,
-                disponible: true
             },
             include: [
                 {
@@ -488,31 +448,18 @@ export const getSolicitudes = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const getProblematicasUser = async (req, res) => {
-    try {
-        const token = req.headers['x-access-token'];
-    
-        if (!token) {
-            return res.status(401).json({
-                auth: false,
-                message: 'No token provided',
-            });
-        }
+    if (req.userRole !== 'ENTIDAD') {
+        return res.status(403).json({
+            auth: false,
+            message: 'Access restricted to entities only',
+        });
+    }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await Usuario.findByPk(decoded.id);
-        if (!user) { 
-            return res.status(404).json({ message: 'User not found' });
-        }
-        
-        if (user.tipo_usuario !== 'BECARIO') {
-            return res.status(403).json({ message: 'Access denied. Only BECARIO users are allowed.' });
-        }
-
+    try{
         const problematicas = await Problematica.findAll({
-            where: {disponible: false},
             include: [
                 {
                     model: Auxiliar,
@@ -530,7 +477,7 @@ export const getProblematicasUser = async (req, res) => {
                 },
                 {
                     model: Usuario,
-                    where: { id_usuario: user.id_usuario },
+                    where: { id_usuario: req.userId },
                     attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
                 }
             ]
@@ -550,10 +497,11 @@ export const getProblematicasUser = async (req, res) => {
                 como: problematica.como,
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
-                contacto: `${problematica.contacto_cargo}, ${problematica.contacto_nombre}`,
+                contacto: `${problematica.contacto_cargo}, ${problematica.contacto_cargo}`,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
+                validado: problematica.validado,
                 publicado: publication ? publication.createdAt : null,
                 actualizado: problematica.updatedAt,
                 creado: problematica.createdAt,
@@ -572,36 +520,3 @@ export const getProblematicasUser = async (req, res) => {
 };
 
 
-export const validationProblematica = async (req, res) => {
-    const { id_problematica } = req.params;
-    const { publicado } = req.body;
-
-    try {
-        const problematica = await Problematica.findByPk(id_problematica);
-
-        if (!problematica) return res.status(404).json({ message: "La Problematica no existe" });
-
-        if (publicado) {
-            await Publicacion.update(
-                { activo: false },
-                { where: { problematicaIdProblematica: id_problematica } }
-            );
-
-            await Publicacion.create({
-                problematicaIdProblematica: id_problematica,
-                activo: true,
-            });
-        } else {
-            await Publicacion.update(
-                { activo: false },
-                { where: { problematicaIdProblematica: id_problematica } }
-            );
-        }
-
-        res.status(200).json({ message: "Publicacion actualizada correctamente" });
-        
-    } catch (error) {
-        console.error("Error al actualizar la publicacion: ", error);
-        res.status(500).json({ message: "Error interno del servidor" });
-    }
-};

@@ -1,19 +1,22 @@
 import { Router } from "express";
-import { getUsuario,  
+import { getUsuario, getUsuarios,
         updateUsuario, deleteUsuario,
         loginUsuario,createUsuario
 } from '../controllers/usuarios.controller.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { isAdmin } from '../middlewares/adminMiddleware.js';
+
 
 const router = Router();
 
-//router.get('/', getUsuarios);
-//router.get('/:id_usuario', getUsuario);
+router.get('/', verifyToken, isAdmin, getUsuarios);
+router.get('/:id_usuario',verifyToken , getUsuario);
 
-router.post('/register', createUsuario);
+router.post('/register',verifyToken, isAdmin , createUsuario);
 router.post('/login', loginUsuario);
-router.get('/profile', getUsuario);
+router.get('/profile',verifyToken, getUsuario);
 
-router.put('/:id_usuario', updateUsuario);
-router.delete('/:id_usuario', deleteUsuario);
+router.put('/:id_usuario', verifyToken, isAdmin, updateUsuario);
+router.delete('/:id_usuario', verifyToken, isAdmin , deleteUsuario);
 
 export default router;
