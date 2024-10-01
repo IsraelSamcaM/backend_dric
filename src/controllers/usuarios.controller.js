@@ -1,38 +1,25 @@
-import { Auxiliar } from '../models/Auxiliar.js';
 import { Usuario } from '../models/Usuario.js';
+import { encryptPassword, comparePassword } from '../utilities/encryptHelper.js';
+import { generateToken } from '../utilities/tokenHelper.js';
 
-import bcrypt from 'bcrypt';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 
-dotenv.config(); 
-
-// export const getUsuarios = async (req, res) => {
-//     try {
-//         const usuarios = await Usuario.findAll();
-//         res.json(usuarios);
-//     } catch (error) {
-//         return res.status(500).json({ message: error.message });
-//     }
-// };
+export const getUsuarios = async (req, res) => {
+    try {
+        const usuarios = await Usuario.findAll(
+            {attributes: ['id_usuario', 'nombre_usuario', 'email_usuario', 'tipo_usuario']}
+        );
+        res.json(usuarios);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
 
 export const getUsuario = async (req, res) => {
     try {
-        const token = req.headers['x-access-token']
-
-        if(!token){
-            return res.status(401).json({
-                auth: false,
-                message: 'No token provided'
-            })
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-        const user = await Usuario.findByPk(
-            decoded.id, 
-            {attributes: ['id_usuario', 'nombre_usuario', 'email_usuario', 'tipo_usuario']} 
-        );
+        const user = await Usuario.findByPk(req.userId, {
+            attributes: ['id_usuario', 'nombre_usuario', 'email_usuario', 'tipo_usuario']
+        });
+        if (!user) return res.status(404).json({ message: "User not found" });
 
         res.json(user);
     } catch (error) {
@@ -43,7 +30,8 @@ export const getUsuario = async (req, res) => {
 export const createUsuario = async (req, res) => {
     try {
         const { nombre_usuario, contrasenia_usuario, email_usuario, tipo_usuario } = req.body;
-        const newUsuario = await Usuario.create({ nombre_usuario, contrasenia_usuario, email_usuario, tipo_usuario });
+        const hashedPassword = await encryptPassword(contrasenia_usuario);
+        const newUsuario = await Usuario.create({ nombre_usuario, contrasenia_usuario: hashedPassword, email_usuario, tipo_usuario });
         res.json(newUsuario);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -52,36 +40,27 @@ export const createUsuario = async (req, res) => {
 
 export const updateUsuario = async (req, res) => {
     try {
-        const token = req.headers['x-access-token'];
-
-        if (!token) {
-            return res.status(401).json({
-                auth: false,
-                message: 'No token provided'
-            });
-        }
-
         const { id_usuario } = req.params;
         const { nombre_usuario, contrasenia_actual, nueva_contrasenia, email_usuario } = req.body;
 
         const usuario = await Usuario.findByPk(id_usuario);
-        if (!usuario) return res.status(404).json({ message: "El usuario no existe" });
+        if (!usuario) return res.status(404).json({ message: "User not found" });
 
-        const validPassword = await bcrypt.compare(contrasenia_actual, usuario.contrasenia_usuario);
+        const validPassword = await comparePassword(contrasenia_actual, usuario.contrasenia_usuario);
         if (!validPassword) {
-            return res.status(400).json({ message: "La contraseña actual es incorrecta" });
+            return res.status(400).json({ message: "Current password is incorrect" });
         }
 
         usuario.nombre_usuario = nombre_usuario || usuario.nombre_usuario;
         usuario.email_usuario = email_usuario || usuario.email_usuario;
 
         if (nueva_contrasenia) {
-            usuario.contrasenia_usuario = nueva_contrasenia;
+            usuario.contrasenia_usuario = await encryptPassword(nueva_contrasenia);
         }
 
         await usuario.save();
 
-        res.json({ message: "Usuario actualizado correctamente", usuario });
+        res.json({ message: "User updated successfully", usuario });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -89,16 +68,6 @@ export const updateUsuario = async (req, res) => {
 
 export const deleteUsuario = async (req, res) => {
     try {
-
-        const token = req.headers['x-access-token']
-
-        if(!token){
-            return res.status(401).json({
-                auth: false,
-                message: 'No token provided'
-            })
-        }
-
         const { id_usuario } = req.params;
         await Usuario.destroy({ where: { id_usuario } });
         res.sendStatus(204);
@@ -112,26 +81,20 @@ export const loginUsuario = async (req, res) => {
 
     try {
         const usuario = await Usuario.findOne({ where: { nombre_usuario } });
-
         if (!usuario) {
-            return res.status(404).json({ message: "El usuario no existe" });
+            return res.status(404).json({ message: "User not found" });
         }
 
-        const isMatch = await bcrypt.compare(contrasenia_usuario, usuario.contrasenia_usuario);
-
+        const isMatch = await comparePassword(contrasenia_usuario, usuario.contrasenia_usuario);
         if (!isMatch) {
-            return res.status(404).json({ message: "Password incorrecto" });
+            return res.status(404).json({ message: "Incorrect password" });
         }
 
-        const token = jwt.sign(
-            { id: usuario.id_usuario },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
+        const token = generateToken(usuario.id_usuario);
         res.json({ auth: true, token });
     } catch (error) {
         console.error('Error logging in user:', error);
         res.status(500).json({ message: 'An error occurred during login' });
     }
 };
+

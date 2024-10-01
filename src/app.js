@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-import './tasks/updateProblematicas.js';
+import { swaggerUi, swaggerSpec } from "./utilities/swaggerConfig.js";
+
 
 const app = express();
 
@@ -34,6 +35,9 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', limiter)
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Routes
 //app.use(ambientesRoutes);
 

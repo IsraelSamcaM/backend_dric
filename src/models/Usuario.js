@@ -28,9 +28,6 @@ export const Usuario = sequelize.define('usuarios', {
 }, {
     timestamps: true,
     hooks: {
-        // beforeValidate: (usuario, options) => {
-        //     usuario.nombre_usuario = usuario.nombre_usuario.toUpperCase();
-        // },
         beforeCreate: async (usuario, options) => {
             if (usuario.contrasenia_usuario) {
                 const salt = await bcrypt.genSalt(10);
