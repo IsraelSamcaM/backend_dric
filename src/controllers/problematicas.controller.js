@@ -145,6 +145,7 @@ export const getProblematica = async (req, res) => {
             contacto_cargo: problematica.contacto_cargo,
             telefono: problematica.telefono ? problematica.telefono : "0",
             telefono_institucional: problematica.telefono_institucional,
+            validado: problematica.validado,
             zona: problematica.zona,
             publicado: publication ? publication.createdAt : null, 
             actualizado: problematica.updatedAt,
