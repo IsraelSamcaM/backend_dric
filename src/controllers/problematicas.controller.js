@@ -510,6 +510,8 @@ export const getProblematicasUser = async (req, res) => {
                     where: { id_usuario: req.userId },
                     attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
                 }
+            ],order: [
+                ['updatedAt', 'DESC']
             ]
         });
 
