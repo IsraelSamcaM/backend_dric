@@ -33,7 +33,7 @@ export const getProblematicas = async (req, res) => {
                 },
                 {
                     model: Usuario,
-                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                    attributes: ["id_usuario","nombre_usuario", "email_usuario"]
                 }
             ],order: [
                 ['updatedAt', 'DESC']
@@ -56,6 +56,8 @@ export const getProblematicas = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
+                contacto_nombre: problematica.contacto_nombre,
+                contacto_cargo: problematica.contacto_cargo,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
@@ -69,8 +71,29 @@ export const getProblematicas = async (req, res) => {
                 solicitante: problematica.solicitante,
                 carreras: carreras
             };
-        });
+        }); 
+        
+        if (req.userRole == 'ADMINISTRADOR') {
+            return res.status(200).json(result);
+        } else if (req.userRole == 'ESTUDIANTE') {
+            const id_carrera = req.userCarreraId;
+        
+            const filteredResult = result.filter(problematica =>
+                problematica.carreras.some(carrera => carrera.id_carrera === id_carrera)
+            );
+        
+            const otherResults = result.filter(problematica =>
+                !problematica.carreras.some(carrera => carrera.id_carrera === id_carrera)
+            );
+        
+            const combinedResult = [...filteredResult, ...otherResults];
+        
+            return res.status(200).json(combinedResult);
+        }
+        
         return res.status(200).json(result);
+        
+        
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -98,7 +121,7 @@ export const getProblematica = async (req, res) => {
                 },
                 {
                     model: Usuario,
-                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                    attributes: ["id_usuario","nombre_usuario", "email_usuario"]
                 },
             ]
         });
@@ -118,6 +141,8 @@ export const getProblematica = async (req, res) => {
             para_que: problematica.para_que,
             cuando: problematica.cuando,
             contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
+            contacto_nombre: problematica.contacto_nombre,
+            contacto_cargo: problematica.contacto_cargo,
             telefono: problematica.telefono ? problematica.telefono : "0",
             telefono_institucional: problematica.telefono_institucional,
             zona: problematica.zona,
@@ -187,6 +212,8 @@ export const getTableProblematicas = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
+                contacto_nombre: problematica.contacto_nombre,
+                contacto_cargo: problematica.contacto_cargo,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
@@ -407,7 +434,7 @@ export const getSolicitudes = async (req, res) => {
                 },
                 {
                     model: Usuario,
-                    attributes: ["id_usuario", "nombre_usuario", "email_usuario"]
+                    attributes: ["nombre_usuario", "email_usuario"]
                 }
             ],order: [
                 ['updatedAt', 'ASC']
@@ -430,6 +457,8 @@ export const getSolicitudes = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: problematica.contacto_cargo + ', ' + problematica.contacto_nombre,
+                contacto_nombre: problematica.contacto_nombre,
+                contacto_cargo: problematica.contacto_cargo,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,
@@ -498,6 +527,8 @@ export const getProblematicasUser = async (req, res) => {
                 para_que: problematica.para_que,
                 cuando: problematica.cuando,
                 contacto: `${problematica.contacto_cargo}, ${problematica.contacto_cargo}`,
+                contacto_nombre: problematica.contacto_nombre,
+                contacto_cargo: problematica.contacto_cargo,
                 telefono: problematica.telefono ? problematica.telefono : "0",
                 telefono_institucional: problematica.telefono_institucional,
                 zona: problematica.zona,

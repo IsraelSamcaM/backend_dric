@@ -124,35 +124,70 @@
  *                   example: An error occurred during login
  */
 
-
-
 /**
  * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *   schemas:
- *     Usuario:
- *       type: object
- *       properties:
- *         id_usuario:
- *           type: string
- *           description: Unique identifier for the user
- *         nombre_usuario:
- *           type: string
- *           description: Name of the user
- *         email_usuario:
- *           type: string
- *           description: Email of the user
- *         tipo_usuario:
- *           type: string
- *           description: Role of the user (e.g., ADMINISTRADOR, ENTIDAD)
- *       example:
- *         id_usuario: "1"
- *         nombre_usuario: "user1"
- *         email_usuario: "user1@iptu.com"
- *         tipo_usuario: "ENTIDAD"
+ * /api/usuarios/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: This endpoint allows an administrator to register a new user in the system. It requires a valid JWT token for authentication and administrative privileges.
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - name: x-access-token
+ *         in: header
+ *         description: Token generated upon login to authorize the request.
+ *         required: true
+ *         type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre_usuario:
+ *                 type: string
+ *                 description: Username of the new user.
+ *                 example: "john_doe"
+ *               contrasenia_usuario:
+ *                 type: string
+ *                 description: Password for the new user.
+ *                 example: "SecurePassword123!"
+ *               email_usuario:
+ *                 type: string
+ *                 description: Email address of the new user.
+ *                 example: "john.doe@example.com"
+ *               tipo_usuario:
+ *                 type: string
+ *                 description: Type of user (e.g., 'ADMINISTRADOR', 'ENTIDAD', etc.).
+ *                 example: "ENTIDAD"
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_usuario:
+ *                   type: integer
+ *                   description: Unique identifier for the user
+ *                 nombre_usuario:
+ *                   type: string
+ *                   description: Username of the created user
+ *                 email_usuario:
+ *                   type: string
+ *                   description: Email address of the created user
+ *                 tipo_usuario:
+ *                   type: string
+ *                   description: Type of the created user
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error."
  */

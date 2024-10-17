@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { Usuario } from '../models/Usuario.js';
+
+import { studentCarreras } from '../utilities/dataUserEst/studentCarreras.js';
+
 dotenv.config();
 
 export const verifyToken = async (req, res, next) => {
@@ -24,6 +27,13 @@ export const verifyToken = async (req, res, next) => {
 
         req.userId = user.id_usuario; 
         req.userRole = user.tipo_usuario;
+
+        //temporal
+        const studentCareer = studentCarreras.find(carrera => carrera.id_usuario === user.id_usuario);
+        if (studentCareer) {
+            req.userCarreraId = studentCareer.id_carrera;
+            req.userCarreraNombre = studentCareer.nombre_carrera;
+        } //temporal
         
         next();
     } catch (error) {

@@ -15,6 +15,12 @@
  *     tags: [Problematicas]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-access-token
+ *         in: header
+ *         description: Token generated upon login to authorize the request.
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
  *         description: A list of validated and available problematicas
@@ -55,6 +61,12 @@
  *                   contacto:
  *                     type: string
  *                     description: Contact information
+ *                   contacto_nombre:
+ *                     type: string
+ *                     description: Contact name information
+ *                   contacto_cargo:
+ *                     type: string
+ *                     description: Contact position information
  *                   telefono:
  *                     type: integer
  *                     description: Phone number for contact
@@ -119,6 +131,11 @@
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - name: x-access-token
+ *         in: header
+ *         description: Token generated upon login to authorize the request.
+ *         required: true
+ *         type: string
  *       - name: id_problematica
  *         in: path
  *         required: true
@@ -163,6 +180,12 @@
  *                 contacto:
  *                   type: string
  *                   description: Contact information
+ *                 contacto_nombre:
+ *                     type: string
+ *                     description: Contact name information
+ *                 contacto_cargo:
+ *                     type: string
+ *                     description: Contact position information
  *                 telefono:
  *                   type: integer
  *                   description: Phone number for contact
@@ -275,6 +298,12 @@
  *                   contacto:
  *                     type: string
  *                     description: Contact information
+ *                   contacto_nombre:
+ *                     type: string
+ *                     description: Contact name information
+ *                   contacto_cargo:
+ *                     type: string
+ *                     description: Contact position information
  *                   telefono:
  *                     type: integer
  *                     description: Phone number for contact
@@ -895,7 +924,13 @@
  *                     description: When the Problematica occurred
  *                   contacto:
  *                     type: string
- *                     description: Contact information (position and name)
+ *                     description: Contact information
+ *                   contacto_nombre:
+ *                     type: string
+ *                     description: Contact name information
+ *                   contacto_cargo:
+ *                     type: string
+ *                     description: Contact position information
  *                   telefono:
  *                     type: integer
  *                     description: Phone number of the contact
@@ -1031,7 +1066,13 @@
  *                     description: When the Problematica occurred
  *                   contacto:
  *                     type: string
- *                     description: Contact information (position and name)
+ *                     description: Contact information
+ *                   contacto_nombre:
+ *                     type: string
+ *                     description: Contact name information
+ *                   contacto_cargo:
+ *                     type: string
+ *                     description: Contact position information
  *                   telefono:
  *                     type: integer
  *                     description: Phone number of the contact
