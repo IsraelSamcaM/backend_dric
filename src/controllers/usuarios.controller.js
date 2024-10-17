@@ -1,18 +1,18 @@
 import { Usuario } from '../models/Usuario.js';
-import { encryptPassword, comparePassword } from '../utilities/encryptHelper.js';
 import { generateToken } from '../utilities/tokenHelper.js';
-
+import bcrypt from 'bcryptjs';
 
 export const getUsuarios = async (req, res) => {
     try {
         const usuarios = await Usuario.findAll(
-            {attributes: ['id_usuario', 'nombre_usuario', 'email_usuario', 'tipo_usuario']}
+            {attributes: ['id_usuario', 'nombre_usuario', 'email_usuario', 'tipo_usuario', 'contrasenia_usuario']}
         );
         res.json(usuarios);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 export const getUsuario = async (req, res) => {
     try {
@@ -30,13 +30,23 @@ export const getUsuario = async (req, res) => {
 export const createUsuario = async (req, res) => {
     try {
         const { nombre_usuario, contrasenia_usuario, email_usuario, tipo_usuario } = req.body;
-        const hashedPassword = await encryptPassword(contrasenia_usuario);
-        const newUsuario = await Usuario.create({ nombre_usuario, contrasenia_usuario: hashedPassword, email_usuario, tipo_usuario });
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(contrasenia_usuario, salt);
+
+        const newUsuario = await Usuario.create({ 
+            nombre_usuario, 
+            contrasenia_usuario: hashedPassword,    
+            email_usuario, 
+            tipo_usuario 
+        });
+
         res.json(newUsuario);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 export const updateUsuario = async (req, res) => {
     try {
@@ -46,7 +56,8 @@ export const updateUsuario = async (req, res) => {
         const usuario = await Usuario.findByPk(id_usuario);
         if (!usuario) return res.status(404).json({ message: "User not found" });
 
-        const validPassword = await comparePassword(contrasenia_actual, usuario.contrasenia_usuario);
+        // Comparar la contraseña actual
+        const validPassword = await bcrypt.compare(contrasenia_actual, usuario.contrasenia_usuario);
         if (!validPassword) {
             return res.status(400).json({ message: "Current password is incorrect" });
         }
@@ -54,12 +65,13 @@ export const updateUsuario = async (req, res) => {
         usuario.nombre_usuario = nombre_usuario || usuario.nombre_usuario;
         usuario.email_usuario = email_usuario || usuario.email_usuario;
 
+        // Si se proporciona una nueva contraseña, encriptarla
         if (nueva_contrasenia) {
-            usuario.contrasenia_usuario = await encryptPassword(nueva_contrasenia);
+            const salt = await bcrypt.genSalt(10);
+            usuario.contrasenia_usuario = await bcrypt.hash(nueva_contrasenia, salt);
         }
 
         await usuario.save();
-
         res.json({ message: "User updated successfully", usuario });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -85,7 +97,9 @@ export const loginUsuario = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const isMatch = await comparePassword(contrasenia_usuario, usuario.contrasenia_usuario);
+        // Comparar la contraseña ingresada con la hasheada
+        const isMatch = await bcrypt.compare(contrasenia_usuario, usuario.contrasenia_usuario);
+
         if (!isMatch) {
             return res.status(404).json({ message: "Incorrect password" });
         }
@@ -97,4 +111,3 @@ export const loginUsuario = async (req, res) => {
         res.status(500).json({ message: 'An error occurred during login' });
     }
 };
-

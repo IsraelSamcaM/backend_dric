@@ -18,8 +18,8 @@ router.get('/solicitudes/', verifyToken, getSolicitudes);
 router.put('/publicacion/:id_problematica', verifyToken,updatePublishProblematica);
 
 
-router.get('/',getProblematicas);
-router.get('/:id_problematica', getProblematica);
+router.get('/',verifyToken, getProblematicas);
+router.get('/:id_problematica', verifyToken, getProblematica);
 
 
 router.post('/',verifyToken, createProblematica);
